@@ -1,0 +1,139 @@
+<!--
+MAZE-A-TRON
+Written by Richard Stanton , Computer Science M.S. student at University of Missouri - St. Louis
+For CS 5130 - Professor Badri Adhikari
+Fall Semester 2017
+-->
+
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>MAZE-A-TRON</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="manifest" href="site.webmanifest">
+        <link rel="apple-touch-icon" href="icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/bootstrap.css"/>
+
+        <link href="https://fonts.googleapis.com/css?family=Bungee+Shade|VT323" rel="stylesheet">
+        <!--
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        -->
+        <script src="js/vendor/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="js/bootstrap.js"></script>
+    </head>
+    <body onresize="myResize()">
+        <!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+
+        <div class="container-fluid" style="height: 100%;">
+            <div id="left_control_area">
+                <div id="title-name">MAZE-A-TRON</div>
+                <div id="new_game_section">
+                    <p class="section-header-text">
+                        New Game <button class="btn btn-outline-primary" style="background-color: lightblue" onclick="showHelpModal()">Help?</button>
+                    </p>
+                    <p><button class="btn btn-warning game-type" onclick="startGame('easy')">Easy - 12x12</button></p>
+                    <p><button class="btn btn-warning game-type" onclick="startGame('normal')">Normal - 25x25</button></p>
+                    <p><button class="btn btn-warning game-type" onclick="startGame('hard')">Hard - 45x45</button></p>
+                </div>
+                <div id="current_game_section" style="display:none">
+                    <p class="section-header-text">
+                        Current Game
+                    </p>
+                    <p id="current_game_display">Normal - 25x25</p>
+                    <p><button  class="btn btn-default game-type" onclick="retryHandler()">Restart</button></p>
+                    <p>Your Path = <span id="path_distance" style="font-weight:bold"></span> tiles</p>
+                    <div id="shortestPathLength" style="display: none">
+                        Shortest Path = <span id="shortest_path_display" style="font-weight:bold"></span> tiles
+                    </div>
+                    <!--- Make this hidden for final release --->
+                    <p id="showSolutionButton" style="margin-top:10px;"><button  class="btn btn-default game-type" onclick="showSolutionHandler()">Show Algorithm</button></p>
+                </div>
+            </div>
+            <div id="maze_area">
+                <div id="welcomeContainer">
+                    <p>Welcome to MAZE-A-TRON!</p>
+                    <p>Please choose a diffulty to start.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="successModal" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Congratulations!!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You have discovered an optimal path in <span id="path_distance2" style="font-weight:bold"></span> tiles!!!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="failModal" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Uh Oh!!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You have not discovered an optimal path.</p>
+                        <p>Your path was <span id="path_distance3" style="font-weight:bold"></span> tiles. The shortest path was <span id="shortest_path_distance" style="font-weight:bold"></span> tiles.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="retryHandler()">Retry</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="showOptimalPath()">Show Solution</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="helpModal" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Welcome to Maze-a-tron!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You're goal is to get through the maze using the <b>shortest path possible</b>.</p>
+                        <p>Start by hovering over the start (&#127968;) tile, then drag the colored "head" square to the end (&#127937;) tile.  <b>No need to hold down the mouse button.</b></p>
+                        <p>Use the "Restart" button if you'd like to clear the maze and start again.  Use the "New Game" buttons to generate a new maze.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="js/vendor/modernizr-3.5.0.min.js"></script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>
+</html>
