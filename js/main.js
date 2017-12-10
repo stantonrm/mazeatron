@@ -647,7 +647,6 @@ function buildSolutionPath(queue, graphSet){
     var u = queue.shift();
     var v;
     var isDeadEnd = true;
-    var bordersEndCell = false;
 
     // Can we move up? Check up (row - 1)
     if(u.row - 1 > 0 && hWall[u.row - 1][u.col - 1] == false){
@@ -661,9 +660,6 @@ function buildSolutionPath(queue, graphSet){
         }
         else {
             if(v.color != "BLACK" && u.distance + 1 == v.distance) isDeadEnd = false;
-            if(document.getElementById("maze_cell_" + v.row + "_" + v.col) == endCell && v.distance == u.distance + 1) {
-                bordersEndCell = true;
-            }
         }
 
     }
@@ -680,9 +676,6 @@ function buildSolutionPath(queue, graphSet){
         }
         else {
             if(v.color != "BLACK" && u.distance + 1 == v.distance) isDeadEnd = false;
-            if(document.getElementById("maze_cell_" + v.row + "_" + v.col) == endCell && v.distance == u.distance + 1) {
-                bordersEndCell = true;
-            }
         }
     }
 
@@ -698,9 +691,6 @@ function buildSolutionPath(queue, graphSet){
         }
         else {
             if(v.color != "BLACK" && u.distance + 1 == v.distance) isDeadEnd = false;
-            if(document.getElementById("maze_cell_" + v.row + "_" + v.col) == endCell && v.distance == u.distance + 1) {
-                bordersEndCell = true;
-            }
         }
     }
 
@@ -715,15 +705,12 @@ function buildSolutionPath(queue, graphSet){
             isDeadEnd = false;
         }
         else {
-            if(v.color != "BLACK" && u.distance + 1 == v.distance) isDeadEnd = false;
-            if(document.getElementById("maze_cell_" + v.row + "_" + v.col) == endCell && v.distance == u.distance + 1) {
-                bordersEndCell = true;
-            }
+            if(v.color != "BLACK" && u.distance + 1 == v.distance) isDeadEnd = false
         }
     }
 
     var cellDOM = document.getElementById("maze_cell_" + u.row + "_" + u.col);
-    if (isDeadEnd && cellDOM != endCell && !(bordersEndCell)){
+    if (isDeadEnd && cellDOM != endCell){
         u.color = "BLACK";
         showAncestorDeadEnd(u, graphSet);
     } else {
